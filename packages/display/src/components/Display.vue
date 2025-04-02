@@ -52,7 +52,7 @@
               <VIcon
                 v-if="isSelected"
                 :color="isCorrect(index) ? 'success' : 'error'"
-                :icon="`mdi-${isCorrect(index) ? 'check' : 'close'}-circle'`"
+                :icon="`mdi-${isCorrect(index) ? 'check' : 'close'}-circle`"
               />
             </template>
           </VCard>
