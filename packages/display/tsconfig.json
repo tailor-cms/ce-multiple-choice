@@ -12,6 +12,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "declaration": true,
+    "emitDeclarationOnly": true,
     // Linting
     "strict": true,
     "noUnusedLocals": true,
