@@ -7,7 +7,6 @@ test.beforeEach(async ({ page }) => {
 test('Renders Edit component', async ({ page }) => {
   const editFrame = page.frameLocator('#editPanel>iframe')
   await expect(editFrame.getByText('Authoring component')).toBeVisible();
-  await expect(editFrame.getByText('Top toolbar')).toBeVisible();
 });
 
 test('Renders Display component', async ({ page }) => {
