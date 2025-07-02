@@ -1,6 +1,6 @@
 <template>
   <QuestionContainer
-    v-bind="{ elementData, embedElementConfig, isDisabled }"
+    v-bind="{ elementData, embedElementConfig, isReadonly }"
     show-feedback
     @update="emit('update', $event)"
   >
@@ -16,7 +16,7 @@
           :key="index"
           :model-value="answer"
           :placeholder="placeholder"
-          :readonly="isDisabled"
+          :readonly="isReadonly"
           :rules="validation.answer"
           class="my-2 w-100"
           variant="outlined"
@@ -27,7 +27,7 @@
               v-if="isGradable"
               :error="isValid.value === false"
               :model-value="elementData.correct"
-              :readonly="isDisabled"
+              :readonly="isReadonly"
               :value="index"
               color="primary"
               hide-details
@@ -44,7 +44,7 @@
               {{ index + 1 }}
             </VAvatar>
           </template>
-          <template v-if="!isDisabled && answers.length > 2" #append>
+          <template v-if="!isReadonly && answers.length > 2" #append>
             <VBtn
               aria-label="Remove answer"
               color="primary-darken-4"
@@ -61,7 +61,7 @@
     </VInput>
     <div class="d-flex justify-end mb-4">
       <VBtn
-        v-if="!isDisabled"
+        v-if="!isReadonly"
         color="primary-darken-4"
         prepend-icon="mdi-plus"
         variant="text"
@@ -75,18 +75,17 @@
 </template>
 
 <script lang="ts" setup>
+import { cloneDeep, range, set } from 'lodash-es';
 import { computed, defineEmits, defineProps } from 'vue';
-import cloneDeep from 'lodash/cloneDeep';
 import { Element } from '@tailor-cms/ce-multiple-choice-manifest';
 import { QuestionContainer } from '@tailor-cms/core-components';
-import range from 'lodash/range';
-import set from 'lodash/set';
 
 const props = defineProps<{
   element: Element;
   embedElementConfig: any[];
+  isDragged: boolean;
   isFocused: boolean;
-  isDisabled: boolean;
+  isReadonly: boolean;
 }>();
 const emit = defineEmits(['save', 'update']);
 
