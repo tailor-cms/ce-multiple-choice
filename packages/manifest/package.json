@@ -25,8 +25,9 @@
     "prepublish": "pnpm build"
   },
   "devDependencies": {
-    "@tailor-cms/cek-common": "^1.2.6",
+    "@tailor-cms/cek-common": "^1.2.8",
     "@tailor-cms/eslint-config": "1.0.3",
+    "@types/lodash-es": "^4.17.12",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
@@ -49,5 +50,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "uuid": "^11.1.0"
   }
 }
