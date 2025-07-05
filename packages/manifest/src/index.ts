@@ -1,3 +1,7 @@
+import { OpenAISchema } from '@tailor-cms/cek-common';
+import { times } from 'lodash-es';
+import { v4 as uuid } from 'uuid';
+
 import type {
   DataInitializer,
   ElementData,
@@ -33,6 +37,79 @@ const ui = {
   forceFullWidth: true,
 };
 
+export const ai = {
+  Schema: {
+    type: 'json_schema',
+    name: 'ce_multiple_choice',
+    schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string' },
+        answers: { type: 'array', items: { type: 'string' } },
+        correct: { type: 'array', items: { type: 'integer' } },
+        feedback: {
+          type: 'object',
+          // OpenAI does not support pattern properties
+          properties: times(4).reduce(
+            (acc, it) => ({ ...acc, [it]: { type: 'string' } }),
+            {},
+          ),
+          required: times(4, String),
+          additionalProperties: false,
+        },
+        hint: { type: 'string' },
+      },
+      required: ['question', 'answers', 'correct', 'feedback', 'hint'],
+      additionalProperties: false,
+    },
+  } as OpenAISchema,
+  getPrompt: () => `
+    Generate multiple choice question as an object with the following properties:
+    {
+      "question": "",
+      "correct": [],
+      "answers": [],
+      "hint": "",
+      "feedback": {}
+    }
+    where:
+      - 'question' is the question prompt
+      - 'answers' is an array of possible answers. Define 4 possible answers.
+      - 'correct' is an array of indexes of the correct answers (one or more
+        answers can be correct)
+      - 'hint' is an optional hint for the correct solution
+      - 'feedback' is an object with feedback for each answer, using indexes as
+        keys. Feedback is optional and should provide more information
+        about the answers.
+  `,
+  processResponse: ({
+    correct,
+    answers,
+    hint,
+    feedback,
+    question,
+  }: any = {}) => {
+    const id = uuid();
+    return {
+      isGradable: true,
+      question: [id],
+      correct,
+      answers,
+      hint,
+      feedback,
+      embeds: {
+        [id]: {
+          id,
+          data: { content: question },
+          embedded: true,
+          position: 1,
+          type: 'TIPTAP_HTML',
+        },
+      },
+    };
+  },
+};
+
 const manifest: ElementManifest = {
   type,
   version: '1.0',
@@ -42,6 +119,7 @@ const manifest: ElementManifest = {
   ssr: false,
   initState,
   ui,
+  ai,
 };
 
 export default manifest;

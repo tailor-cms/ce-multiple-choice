@@ -1,5 +1,5 @@
+import { ai, initState, type } from '@tailor-cms/ce-multiple-choice-manifest';
 import type { HookServices, ServerRuntime } from '@tailor-cms/cek-common';
-import { initState, type } from '@tailor-cms/ce-multiple-choice-manifest';
 import { omit, xor } from 'lodash-es';
 import type { Element } from '@tailor-cms/ce-multiple-choice-manifest';
 
@@ -81,6 +81,7 @@ export default {
   afterRetrieve,
   onUserInteraction,
   beforeDisplay,
+  ai,
 };
 
-export { type, initState };
+export { type, initState, ai };
