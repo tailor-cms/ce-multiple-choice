@@ -1,6 +1,7 @@
 <template>
   <QuestionContainer
     :data="element.data"
+    :feedback="feedback"
     :is-correct="userState.isCorrect"
     :is-graded="isGraded"
     :is-submitted="isSubmitted"
@@ -18,29 +19,28 @@
       <VItemGroup
         v-model="selectedAnswer"
         class="w-100 d-flex flex-column ga-2"
-        selected-class="bg-blue-grey-lighten-5"
         multiple
       >
         <VItem
           v-for="(item, index) in element.data.answers"
           :key="index"
-          v-slot="{ toggle, isSelected, selectedClass }"
+          v-slot="{ toggle, isSelected }"
           :value="index"
         >
           <VCard
-            :class="selectedClass"
-            :disabled="isSubmitted"
+            v-bind="isSubmitted ? {} : { onClick: toggle }"
+            :class="{ readonly: isSubmitted, selected: isSelected }"
+            :color="isSelected ? 'primary-darken-1' : 'white'"
+            :variant="isSelected ? 'tonal' : 'flat'"
             class="d-flex align-center px-4 py-3"
             border
-            flat
             rounded
-            @click="toggle"
           >
             <VAvatar
               :class="{ 'font-weight-bold': isSelected }"
               :variant="isSelected ? 'flat' : 'outlined'"
               class="mr-4"
-              color="blue-grey-darken-2"
+              color="primary-darken-1"
               rounded="lg"
               size="small"
             >
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { Element } from '@tailor-cms/ce-multiple-choice-manifest';
+import { pick } from 'lodash-es';
 import { QuestionContainer } from '@tailor-cms/lx-components';
 
 const props = defineProps<{ element: Element; userState: any }>();
@@ -74,6 +75,11 @@ const isSubmitted = ref(!!props.userState.isSubmitted);
 const selectedAnswer = ref<string[]>(props.userState.response ?? []);
 
 const isGraded = computed(() => 'isCorrect' in props.userState);
+const feedback = computed(() => {
+  const feedback = props.element.data.feedback;
+  if (selectedAnswer.value === null) return;
+  return pick(feedback, selectedAnswer.value);
+});
 
 const indexToAlpha = (index: number) => String.fromCharCode(index + 65);
 const isCorrect = (index: number) => props.userState.correct?.includes(index);
@@ -92,3 +98,9 @@ watch(
   { deep: true },
 );
 </script>
+
+<style lang="scss" scoped>
+.v-input .selected.v-card {
+  border: 1px solid color-mix(in srgb, currentColor 36%, transparent);
+}
+</style>
