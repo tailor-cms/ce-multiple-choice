@@ -1,5 +1,5 @@
+import { pick, times } from 'lodash-es';
 import { OpenAISchema } from '@tailor-cms/cek-common';
-import { times } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
 import type {
@@ -82,30 +82,20 @@ export const ai = {
         keys. Feedback is optional and should provide more information
         about the answers.
   `,
-  processResponse: ({
-    correct,
-    answers,
-    hint,
-    feedback,
-    question,
-  }: any = {}) => {
-    const id = uuid();
+  processResponse: (val: any = {}) => {
+    const questionId = uuid();
+    const question = {
+      id: questionId,
+      data: { content: val.question },
+      embedded: true,
+      position: 1,
+      type: 'TIPTAP_HTML',
+    };
     return {
       isGradable: true,
-      question: [id],
-      correct,
-      answers,
-      hint,
-      feedback,
-      embeds: {
-        [id]: {
-          id,
-          data: { content: question },
-          embedded: true,
-          position: 1,
-          type: 'TIPTAP_HTML',
-        },
-      },
+      ...pick(val, ['correct', 'answers', 'hint', 'feedback']),
+      question: [questionId],
+      embeds: { [questionId]: question },
     };
   },
 };
