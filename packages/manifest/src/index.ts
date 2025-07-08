@@ -20,7 +20,7 @@ export const initState: DataInitializer = (): ElementData => ({
   embeds: {},
   question: [],
   correct: [],
-  answers: ['', '', ''],
+  answers: ['', '', '', ''],
   hint: '',
   feedback: {},
 });
