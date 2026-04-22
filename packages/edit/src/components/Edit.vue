@@ -1,15 +1,11 @@
 <template>
-  <QuestionContainer
-    v-bind="{ elementData, embedElementConfig, isReadonly }"
-    show-feedback
-    @update="emit('update', $event)"
-  >
+  <div class="tce-multiple-choice">
     <VInput
       v-slot="{ isValid }"
       :model-value="elementData.correct"
       :rules="validation.correct"
     >
-      <div class="text-subtitle-2 mb-2">{{ title }}</div>
+      <div class="text-title-small mb-2">{{ title }}</div>
       <VSlideYTransition group>
         <VTextField
           v-for="(answer, index) in elementData.answers"
@@ -32,7 +28,9 @@
               color="primary"
               hide-details
               multiple
-              @update:model-value="emit('update', { correct: $event })"
+              @update:model-value="
+                emit('update', { correct: $event ?? undefined })
+              "
             />
             <VAvatar
               v-else
@@ -48,13 +46,11 @@
             <VBtn
               aria-label="Remove answer"
               color="primary-darken-4"
+              icon="mdi-close"
               size="x-small"
               variant="text"
-              icon
               @click="removeAnswer(index)"
-            >
-              <VIcon icon="mdi-close" size="large" />
-            </VBtn>
+            />
           </template>
         </VTextField>
       </VSlideYTransition>
@@ -62,23 +58,23 @@
     <div class="d-flex justify-end mb-4">
       <VBtn
         v-if="!isReadonly"
+        :text="btnLabel"
         color="primary-darken-4"
         prepend-icon="mdi-plus"
         variant="text"
-        rounded
         @click="addAnswer"
-      >
-        {{ btnLabel }}
-      </VBtn>
+      />
     </div>
-  </QuestionContainer>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { cloneDeep, range, set } from 'lodash-es';
-import { computed, defineEmits, defineProps } from 'vue';
-import { Element } from '@tailor-cms/ce-multiple-choice-manifest';
-import { QuestionContainer } from '@tailor-cms/core-components';
+import type {
+  Element,
+  ElementData,
+} from '@tailor-cms/ce-multiple-choice-manifest';
+import { computed } from 'vue';
 
 const props = defineProps<{
   element: Element;
@@ -87,7 +83,10 @@ const props = defineProps<{
   isFocused: boolean;
   isReadonly: boolean;
 }>();
-const emit = defineEmits(['save', 'update']);
+
+const emit = defineEmits<{
+  update: [data: Partial<ElementData>];
+}>();
 
 const elementData = computed(() => props.element.data);
 const isGradable = computed(() => elementData.value.isGradable);
@@ -139,3 +138,9 @@ const removeAnswer = (answerIndex: number) => {
   emit('update', { answers, correct, feedback });
 };
 </script>
+
+<style lang="scss" scoped>
+.tce-multiple-choice {
+  text-align: left;
+}
+</style>
