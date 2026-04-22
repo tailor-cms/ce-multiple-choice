@@ -1,7 +1,4 @@
-import type {
-  AiConfig,
-  ElementMocks,
-} from '@tailor-cms/cek-common';
+import type { AiConfig, ElementMocks } from '@tailor-cms/cek-common';
 import { pick, times } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 
