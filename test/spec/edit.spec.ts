@@ -63,3 +63,11 @@ test.describe('Non-gradable mode', () => {
     await expect(edit.checkboxes).toHaveCount(0);
   });
 });
+
+test.describe('Readonly mode', () => {
+  test('Hides add-answer control', async ({ page }) => {
+    const edit = new Edit(page);
+    await edit.setReadonly();
+    await expect(edit.addAnswerBtn).not.toBeVisible();
+  });
+});
