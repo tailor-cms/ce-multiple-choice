@@ -1,5 +1,13 @@
 # @tailor-cms/ce-multiple-choice-server
 
+## 2.1.1
+
+### Patch Changes
+
+- Migrate to latest tce-boot version and refactor question edit componen
+- Updated dependencies
+  - @tailor-cms/ce-multiple-choice-manifest@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes
