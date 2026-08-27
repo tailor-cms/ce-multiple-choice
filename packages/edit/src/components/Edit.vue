@@ -1,63 +1,75 @@
 <template>
-  <div class="tce-multiple-choice">
+  <div class="tce-multiple-choice mb-6">
     <VInput
       v-slot="{ isValid }"
-      :model-value="elementData.correct"
-      :rules="validation.correct"
+      :rules="[validation.correct]"
+      :validation-value="elementData"
+      hide-details
     >
-      <div class="text-title-small mb-2">{{ title }}</div>
-      <VSlideYTransition group>
-        <VTextField
-          v-for="(answer, index) in elementData.answers"
-          :key="index"
-          :model-value="answer"
-          :placeholder="placeholder"
-          :readonly="isReadonly"
-          :rules="validation.answer"
-          class="my-2 w-100"
-          variant="outlined"
-          @update:model-value="updateAnswer(index, $event)"
-        >
-          <template #prepend>
-            <VCheckbox
-              v-if="isGradable"
-              :error="isValid.value === false"
-              :model-value="elementData.correct"
-              :readonly="isReadonly"
-              :value="index"
-              color="primary"
-              hide-details
-              multiple
-              @update:model-value="
-                emit('update', { correct: $event ?? undefined })
-              "
-            />
-            <VAvatar
-              v-else
-              class="font-weight-bold ma-1"
-              color="surface-container-highest"
-              rounded="lg"
-              size="small"
-            >
-              {{ index + 1 }}
-            </VAvatar>
-          </template>
-          <template v-if="!isReadonly && answers.length > 2" #append>
-            <VBtn
-              aria-label="Remove answer"
-              density="comfortable"
-              icon="mdi-close"
-              size="small"
-              variant="text"
-              @click="removeAnswer(index)"
-            />
-          </template>
-        </VTextField>
-      </VSlideYTransition>
+      <div class="w-100">
+        <div class="text-label-large mb-3">{{ title }}</div>
+        <VSlideYTransition group>
+          <VTextField
+            v-for="(answer, index) in elementData.answers"
+            :key="index"
+            :model-value="answer"
+            :placeholder="placeholder"
+            :readonly="isReadonly"
+            :rules="[validation.answer]"
+            class="my-2 w-100"
+            density="comfortable"
+            variant="outlined"
+            hide-details
+            @update:model-value="updateAnswer(index, $event)"
+          >
+            <template #prepend>
+              <VCheckboxBtn
+                v-if="isGradable"
+                :error="isValid.value === false"
+                :model-value="elementData.correct"
+                :readonly="isReadonly"
+                :value="index"
+                class="flex-0-0 mr-1"
+                color="secondary"
+                density="compact"
+                multiple
+                @mousedown.stop
+                @update:model-value="
+                  emit('update', { correct: $event ?? undefined })
+                "
+              />
+              <VAvatar
+                v-else
+                :text="String(index + 1)"
+                class="text-label-medium font-weight-semibold"
+                color="surface-container-highest"
+                rounded="lg"
+                size="small"
+              />
+            </template>
+            <template v-if="!isReadonly" #append>
+              <VBtn
+                :disabled="answers.length <= 2"
+                aria-label="Remove answer"
+                density="comfortable"
+                icon="mdi-close"
+                size="small"
+                variant="text"
+                @click="removeAnswer(index)"
+              />
+            </template>
+          </VTextField>
+        </VSlideYTransition>
+      </div>
     </VInput>
-    <div class="d-flex justify-end mb-4">
+    <VInput
+      :rules="[validation.correct, validation.answersFilled]"
+      :validation-value="elementData"
+      hide-details="auto"
+      max-errors="2"
+    />
+    <div v-if="!isReadonly" class="d-flex justify-center mt-2">
       <VBtn
-        v-if="!isReadonly"
         :text="btnLabel"
         prepend-icon="mdi-plus"
         variant="text"
@@ -94,18 +106,23 @@ const answers = computed(() => elementData.value.answers);
 const title = computed(() =>
   isGradable.value ? 'Select correct answer(s)' : 'Options',
 );
-const placeholder = computed(() =>
-  isGradable.value ? 'Answer...' : 'Option...',
-);
 const btnLabel = computed(() =>
   isGradable.value ? 'Add answer' : 'Add option',
 );
 
+const placeholder = computed(() =>
+  isGradable.value ? 'Answer...' : 'Option...',
+);
+
 const validation = computed(() => ({
-  answer: [(val: string) => !!val || 'Answer is required'],
-  correct: isGradable.value
-    ? [(v?: number[]) => !!v?.length || 'Please choose the correct answer(s)']
-    : [],
+  answer: (val: string) => !!val,
+  correct: ({ correct }: ElementData) =>
+    !isGradable.value ||
+    !!correct?.length ||
+    'Please choose the correct answer(s)',
+  answersFilled: ({ answers }: ElementData) =>
+    answers.every((it) => !!it) ||
+    `All ${isGradable.value ? 'answers' : 'options'} are required`,
 }));
 
 const addAnswer = () => emit('update', { answers: [...answers.value, ''] });
