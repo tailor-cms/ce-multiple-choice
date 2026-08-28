@@ -1,5 +1,13 @@
 # @tailor-cms/ce-multiple-choice-server
 
+## 2.1.2
+
+### Patch Changes
+
+- Tweak spacings.
+- Updated dependencies
+  - @tailor-cms/ce-multiple-choice-manifest@2.1.2
+
 ## 2.1.1
 
 ### Patch Changes
