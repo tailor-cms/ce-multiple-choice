@@ -8,58 +8,60 @@
     >
       <div class="w-100">
         <div class="text-label-large mb-3">{{ title }}</div>
-        <VSlideYTransition group>
-          <VTextField
-            v-for="(answer, index) in elementData.answers"
-            :key="index"
-            :model-value="answer"
-            :placeholder="placeholder"
-            :readonly="isReadonly"
-            :rules="[validation.answer]"
-            class="my-2 w-100"
-            density="comfortable"
-            variant="outlined"
-            hide-details
-            @update:model-value="updateAnswer(index, $event)"
-          >
-            <template #prepend>
-              <VCheckboxBtn
-                v-if="isGradable"
-                :error="isValid.value === false"
-                :model-value="elementData.correct"
-                :readonly="isReadonly"
-                :value="index"
-                class="flex-0-0 mr-1"
-                color="secondary"
-                density="compact"
-                multiple
-                @mousedown.stop
-                @update:model-value="
-                  emit('update', { correct: $event ?? undefined })
-                "
-              />
-              <VAvatar
-                v-else
-                :text="String(index + 1)"
-                class="text-label-medium font-weight-semibold"
-                color="surface-container-highest"
-                rounded="lg"
-                size="small"
-              />
-            </template>
-            <template v-if="!isReadonly" #append>
-              <VBtn
-                :disabled="answers.length <= 2"
-                aria-label="Remove answer"
-                density="comfortable"
-                icon="mdi-close"
-                size="small"
-                variant="text"
-                @click="removeAnswer(index)"
-              />
-            </template>
-          </VTextField>
-        </VSlideYTransition>
+        <div class="mx-2">
+          <VSlideYTransition group>
+            <VTextField
+              v-for="(answer, index) in elementData.answers"
+              :key="index"
+              :model-value="answer"
+              :placeholder="placeholder"
+              :readonly="isReadonly"
+              :rules="[validation.answer]"
+              class="my-2 w-100"
+              density="comfortable"
+              variant="outlined"
+              hide-details
+              @update:model-value="updateAnswer(index, $event)"
+            >
+              <template #prepend>
+                <VCheckboxBtn
+                  v-if="isGradable"
+                  :error="isValid.value === false"
+                  :model-value="elementData.correct"
+                  :readonly="isReadonly"
+                  :value="index"
+                  class="flex-0-0 mr-1"
+                  color="secondary"
+                  density="compact"
+                  multiple
+                  @mousedown.stop
+                  @update:model-value="
+                    emit('update', { correct: $event ?? undefined })
+                  "
+                />
+                <VAvatar
+                  v-else
+                  :text="String(index + 1)"
+                  class="text-label-medium font-weight-semibold"
+                  color="surface-container-highest"
+                  rounded="lg"
+                  size="small"
+                />
+              </template>
+              <template v-if="!isReadonly" #append>
+                <VBtn
+                  :disabled="answers.length <= 2"
+                  aria-label="Remove answer"
+                  density="comfortable"
+                  icon="mdi-close"
+                  size="small"
+                  variant="text"
+                  @click="removeAnswer(index)"
+                />
+              </template>
+            </VTextField>
+          </VSlideYTransition>
+        </div>
       </div>
     </VInput>
     <VInput
